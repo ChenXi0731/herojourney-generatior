@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英雄旅程故事產生器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --card-bg-color: #ffffff;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-color: #e5e7eb;
+            --input-bg-color: #f9fafb;
+            --input-border-color: #d1d5db;
+            --primary-color: #10b981; /* green-600 */
+            --primary-hover-color: #059669; /* green-700 */
+            --primary-focus-ring: rgba(52, 211, 153, 0.4);
+            --heading-color: #111827;
+            --muted-text-color: #6b7280;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #111827;
+                --text-color: #e5e7eb;
+                --card-bg-color: #1f2937;
+                --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+                --border-color: #374151;
+                --input-bg-color: #374151;
+                --input-border-color: #4b5563;
+                --primary-color: #34d399; /* green-400 */
+                --primary-hover-color: #10b981; /* green-500 */
+                --primary-focus-ring: rgba(110, 231, 183, 0.4);
+                --heading-color: #ffffff;
+                --muted-text-color: #9ca3af;
+            }
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 56rem; /* 896px */
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--heading-color);
+        }
+
+        header p {
+            margin-top: 0.5rem;
+            font-size: 1.125rem;
+            color: var(--muted-text-color);
+        }
+
+        .form-section {
+            background-color: var(--card-bg-color);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            transition: background-color 0.3s;
+        }
+        
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-top: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            background-color: var(--input-bg-color);
+            border: 1px solid var(--input-border-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-focus-ring);
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .api-key-note {
+            font-size: 0.75rem;
+            color: var(--muted-text-color);
+            margin-top: 0.5rem;
+        }
+
+        .stage-card {
+            background-color: var(--input-bg-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .stage-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stage-card p {
+            font-size: 0.875rem;
+            color: var(--muted-text-color);
+            margin-top: 0.25rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .submit-container {
+            margin-top: 2rem;
+        }
+
+        .submit-button {
+            width: 100%;
+            color: #ffffff;
+            background-color: var(--primary-color);
+            font-weight: 500;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            padding: 0.85rem 1.25rem;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .submit-button:hover {
+            background-color: var(--primary-hover-color);
+            transform: scale(1.02);
+        }
+        
+        .submit-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px var(--primary-focus-ring);
+        }
+        
+        .submit-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-section {
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .output-section.visible {
+            display: block;
+        }
+
+        #story-output {
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .loader {
+            width: 28px;
+            height: 28px;
+            border: 3px solid #FFF;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        .copy-button {
+            margin-top: 1rem;
+            color: var(--text-color);
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .copy-button:hover {
+            background-color: var(--input-bg-color);
+            border-color: var(--primary-color);
+        }
+        
+        .copy-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-focus-ring);
+        }
+
+        .copy-success {
+            background-color: var(--primary-color) !important;
+            color: #ffffff !important;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 2rem;
+            }
+            header h1 {
+                font-size: 3rem;
+            }
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>英雄旅程故事產生器</h1>
+            <p>依照經典敘事結構，打造你的專屬英雄傳說。</p>
+        </header>
+
+        <main id="story-form">
+            <section class="form-section">
+                <h2>角色設定</h2>
+                <!-- <div class="form-group">
+                    <label for="groq-api-key">Groq API Key：</label>
+                    <input type="password" id="groq-api-key" placeholder="請在此輸入您的 Groq API Key">
+                    <p class="api-key-note">您的 API Key 只會在您的瀏覽器中使用，不會被儲存或傳送至任何伺服器。</p>
+                </div> -->
+                <div class="form-grid form-group">
+                    <div>
+                        <label for="char-name">角色名稱：</label>
+                        <input type="text" id="char-name" placeholder="例如：亞瑟、莉娜">
+                    </div>
+                    <div>
+                        <label for="start-world">起始世界：</label>
+                        <input type="text" id="start-world" placeholder="主角一開始所處的日常生活環境">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="external-features">外在特徵：</label>
+                    <textarea id="external-features" placeholder="性別、年齡、職業、背景等"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="internal-traits">內在特質：</label>
+                    <textarea id="internal-traits" placeholder="性格、天賦、弱點、內心的渴望/慾望"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="core-weakness">核心弱點：</label>
+                    <textarea id="core-weakness" placeholder="阻礙角色成長的內在缺陷或錯誤認知"></textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="transformation">旅程終點的蛻變：</label>
+                    <textarea id="transformation" placeholder="旅程結束後，主角會從什麼樣的人變成什麼樣的人？（內在的成長）"></textarea>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>英雄旅程</h2>
+                <div id="journey-stages">
+                    <!-- Stages will be dynamically inserted here by JavaScript -->
+                </div>
+            </section>
+
+            <div class="submit-container">
+                <button id="generate-button" class="submit-button">
+                    <span id="button-text">生成故事</span>
+                    <div id="button-loader" class="loader hidden"></div>
+                </button>
+            </div>
+
+            <section id="output-section" class="form-section output-section">
+                 <h2>AI 生成的故事</h2>
+                 <div id="story-output"></div>
+                 <button id="copy-button" class="copy-button" style="display: none;">
+                    📋 複製故事
+                 </button>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const stages = [
+            { stage: 1, title: "平凡世界 (Ordinary World)", meaning: "主角最初的日常生活。" },
+            { stage: 2, title: "歷險的召喚 (Call to Adventure)", meaning: "危機或挑戰出現。" },
+            { stage: 3, title: "拒絕召喚 (Refusal of the Call)", meaning: "主角因恐懼或不情願而退縮。" },
+            { stage: 4, title: "遇見導師 (Meeting the Mentor)", meaning: "導師提供幫助、知識或信心。" },
+            { stage: 5, title: "跨越第一道門檻 (Crossing the Threshold)", meaning: "進入非凡世界的關鍵點。" },
+            { stage: 6, title: "考驗、盟友與敵人 (Tests, Allies, Enemies)", meaning: "經歷重重考驗、結識盟友或面對敵人。" },
+            { stage: 7, title: "接近最深的洞穴 (Approach to the Innermost Cave)", meaning: "進入故事世界（核心）的危險區域。" },
+            { stage: 8, title: "嚴峻考驗 (Ordeal)", meaning: "面對最大的挑戰，可能經歷「死亡」與「重生」。" },
+            { stage: 9, title: "獎賞 (Reward)", meaning: "存活下來後獲得的寶物、知識或能力。" },
+            { stage: 10, title: "回歸之路 (The Road Back)", meaning: "帶著獎賞逃離，踏上返回平凡世界的路途。" },
+            { stage: 11, title: "復甦/復活 (Resurrection)", meaning: "旅程結束前最終且最危險的考驗。" },
+            { stage: 12, title: "帶著獎賞回歸 (Return with the Elixir)", meaning: "將戰果（如知識、自由、或經驗）帶回原本的世界。" }
+        ];
+
+        const stagesContainer = document.getElementById('journey-stages');
+
+        stages.forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'stage-card';
+            card.innerHTML = `
+                <h3>${s.stage}. ${s.title}</h3>
+                <p>${s.meaning}</p>
+                <textarea id="stage-${s.stage}" placeholder="簡短情節描述..."></textarea>
+            `;
+            stagesContainer.appendChild(card);
+        });
+
+        const generateButton = document.getElementById('generate-button');
+        const buttonText = document.getElementById('button-text');
+        const buttonLoader = document.getElementById('button-loader');
+        const outputSection = document.getElementById('output-section');
+        const storyOutput = document.getElementById('story-output');
+        const copyButton = document.getElementById('copy-button');
+
+        generateButton.addEventListener('click', async () => {
+            setLoading(true);
+            storyOutput.textContent = '';
+            outputSection.classList.add('visible');
+
+            const apiKey = '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';
+            if (!apiKey) {
+                storyOutput.textContent = '錯誤：請輸入您的 Groq API Key。';
+                setLoading(false);
+                outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            
+            try {
+                const prompt = buildPrompt();
+                
+                const apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
+
+                const payload = {
+                    messages: [{ role: 'user', content: prompt }],
+                    model: 'openai/gpt-oss-20b',
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+
+                if (!response.ok) {
+                    const errorMessage = result.error?.message || `API 請求失敗，狀態碼：${response.status}`;
+                    throw new Error(errorMessage);
+                }
+
+                if (result.choices && result.choices[0].message.content) {
+                    const generatedText = result.choices[0].message.content;
+                    storyOutput.textContent = generatedText;
+                    copyButton.style.display = 'block';
+                } else {
+                    throw new Error("從 API 收到的回應格式無效。");
+                }
+            } catch (error) {
+                console.error("生成故事時發生錯誤:", error);
+                storyOutput.textContent = `生成失敗，請稍後再試。\n錯誤訊息：${error.message}`;
+                copyButton.style.display = 'none';
+            } finally {
+                setLoading(false);
+                outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+
+        copyButton.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(storyOutput.textContent);
+                
+                // 顯示成功狀態
+                const originalText = copyButton.textContent;
+                copyButton.textContent = '✓ 已複製';
+                copyButton.classList.add('copy-success');
+                
+                // 2秒後恢復原狀
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.classList.remove('copy-success');
+                }, 2000);
+            } catch (error) {
+                console.error('複製失敗:', error);
+                
+                // 備用方案：選取文本
+                const range = document.createRange();
+                range.selectNode(storyOutput);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                copyButton.textContent = '請手動複製已選取的文字';
+                setTimeout(() => {
+                    copyButton.textContent = '📋 複製故事';
+                }, 3000);
+            }
+        });
+        
+        function setLoading(isLoading) {
+            if (isLoading) {
+                generateButton.disabled = true;
+                buttonText.classList.add('hidden');
+                buttonLoader.classList.remove('hidden');
+            } else {
+                generateButton.disabled = false;
+                buttonText.classList.remove('hidden');
+                buttonLoader.classList.add('hidden');
+            }
+        }
+
+        function buildPrompt() {
+            const charName = document.getElementById('char-name').value;
+            const startWorld = document.getElementById('start-world').value;
+            const externalFeatures = document.getElementById('external-features').value;
+            const internalTraits = document.getElementById('internal-traits').value;
+            const coreWeakness = document.getElementById('core-weakness').value;
+            const transformation = document.getElementById('transformation').value;
+            
+            let journeyPrompt = '';
+            stages.forEach(s => {
+                const plotPoint = document.getElementById(`stage-${s.stage}`).value;
+                if (plotPoint) {
+                   journeyPrompt += `\n- ${s.title}: ${plotPoint}`;
+                }
+            });
+
+            return `
+您是一位專業的故事作家。請根據以下提供的「角色設定」和「英雄旅程情節」，將這些零散的要點串連成一個流暢、生動、引人入勝的完整故事。請擴展情節描述，增加細節和情感轉折，讓故事更具可讀性。
+記得只需要完整的故事內容，不需要重複提供角色設定或情節要點，回傳純文字，不要使用Markdown語法。
+
+### 角色設定
+- **角色名稱**: ${charName || '未命名'}
+- **起始世界**: ${startWorld || '未提供'}
+- **外在特徵**: ${externalFeatures || '未提供'}
+- **內在特質**: ${internalTraits || '未提供'}
+- **核心弱點**: ${coreWeakness || '未提供'}
+- **最終蛻變**: ${transformation || '未提供'}
+
+### 英雄旅程情節
+${journeyPrompt || '未提供任何情節。請根據角色設定自由發揮。'}
+
+請開始撰寫完整的故事：
+`;
+        }
+
+    </script>
+</body>
+</html>
+
