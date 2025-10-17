@@ -25,9 +25,19 @@ jobs:
         uses: actions/configure-pages@v4
       
       - name: Inject API Key
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           # 將 GROQ_API_KEY 注入到 index.html 中
-          sed -i "s|{{GROQ_API_KEY}}|${{ secrets.GROQ_API_KEY }}|g" index.html
+          sed -i "s|{{GROQ_API_KEY}}|${GROQ_API_KEY}|g" index.html
+          echo "API Key injection completed"
+          # 驗證替換是否成功 (不顯示實際 key)
+          if grep -q "{{GROQ_API_KEY}}" index.html; then
+            echo "ERROR: API Key was not replaced!"
+            exit 1
+          else
+            echo "API Key replacement verified"
+          fi
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
