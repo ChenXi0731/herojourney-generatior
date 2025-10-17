@@ -1,0 +1,11 @@
+# 本地開發時的設定檔案
+.env
+.env.local
+
+# 編輯器
+.vscode/
+.idea/
+
+# 系統檔案
+.DS_Store
+Thumbs.db

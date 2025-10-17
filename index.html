@@ -381,9 +381,9 @@
             storyOutput.textContent = '';
             outputSection.classList.add('visible');
 
-            const apiKey = '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'; //僅供教學使用方便，請勿任意竊取使用
-            if (!apiKey) {
-                storyOutput.textContent = '錯誤：請輸入您的 Groq API Key。';
+            const apiKey = '{{GROQ_API_KEY}}'; // 此值會在部署時被 GitHub Actions 替換
+            if (!apiKey || apiKey === '{{GROQ_API_KEY}}') {
+                storyOutput.textContent = '錯誤：API Key 未正確配置。請聯繫管理員。';
                 setLoading(false);
                 outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 return;
