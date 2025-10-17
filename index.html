@@ -382,7 +382,7 @@
             outputSection.classList.add('visible');
 
             const apiKey = '{{GROQ_API_KEY}}'; // 此值會在部署時被 GitHub Actions 替換
-            if (!apiKey || apiKey === '{{GROQ_API_KEY}}') {
+            if (!apiKey || apiKey.includes('{{GROQ_API_KEY}}')) {
                 storyOutput.textContent = '錯誤：API Key 未正確配置。請聯繫管理員。';
                 setLoading(false);
                 outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
